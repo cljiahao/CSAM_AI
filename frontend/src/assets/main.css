@@ -1,0 +1,7 @@
+.main {
+  @apply flex justify-between w-screen h-screen max-h-screen m-0 p-0 top-0;
+}
+
+.main-side {
+  @apply flex flex-col w-2/5;
+}

@@ -1,0 +1,23 @@
+.infobar {
+    @apply flex border-b-2 border-gray-300 w-full bg-gray-100 p-1;
+  }
+
+.infobar-menu {
+    @apply text-3xl p-1 mx-1 mr-3 2xl:mr-10;
+}
+
+.infobar-ul {
+    @apply flex items-center gap-1 2xl:gap-3 text-xs 2xl:text-sm ml-3;
+}
+
+.infobar-li {
+    @apply italic w-20 2xl:w-32;
+}
+
+.inforbar-li-p {
+    @apply flex justify-center not-italic pt-1 pb-1;
+}
+
+.infobar-upload {
+   @apply flex justify-center items-center rounded-xl cursor-pointer w-32 2xl:w-36 h-12 bg-gray-600 hover:bg-gray-500 mr-3 2xl:mr-5 ml-auto my-auto text-center text-white text-base 2xl:text-lg; 
+}
