@@ -6,16 +6,17 @@ from sqlalchemy.orm import Session
 
 from core.config import settings
 from db.session import get_db
-from db.repository.csam_ratio import create_new_ratio
+from db.repository.csam_ratio import create_new_ratio, get_db_data
 from schemas.ratio import CreateRatio
 from schemas.ng import ShowNG
 
 from apis.inspect.base import inspect
 
+
 router = APIRouter()
 
 
-@router.post("/uploadfile", response_model=ShowNG)
+@router.post("/upload_file", response_model=ShowNG)
 def predict_NG_chips(file: UploadFile = File(...), lot_no: str = Form(...), db: Session = Depends(get_db)):
 
     if lot_no.lower()[:4] == "test": chip_type = settings.CHIPTYPE
@@ -42,7 +43,13 @@ def predict_NG_chips(file: UploadFile = File(...), lot_no: str = Form(...), db: 
     return res
 
 
-@router.post("/insertDB")
+@router.post("/insert_db")
 def insert_db(ratio: CreateRatio, db: Session = Depends(get_db)):
     ratio = create_new_ratio(ratio=ratio, db=db)
+    return ratio
+
+
+@router.get("/read_db")
+def read_db(db: Session = Depends(get_db)):
+    ratio = get_db_data(db=db)
     return ratio

@@ -17,5 +17,5 @@ class ShowRatio(BaseModel):
     no_of_chips: int
 
     class Config:  # tells pydantic to convert even non dict obj to json
-        orm_mode = True
+        from_attributes = True
 

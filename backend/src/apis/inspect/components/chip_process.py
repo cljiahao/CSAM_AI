@@ -7,7 +7,7 @@ from apis.inspect.components.batch_process import find_batch_no
 
 
 def chips(border_img, batch_data) -> dict:
-
+    """ Main function to call sub functions """
     no_of_chips = 0
     ng_dict, pred_dict = {}, {}
 

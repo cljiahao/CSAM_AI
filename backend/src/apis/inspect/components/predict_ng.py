@@ -2,8 +2,9 @@ import os
 import numpy as np
 import tensorflow.keras.models as Model
 
+
 def prediction(chip_type, pred_dict):
-    
+    """ Main function to call sub functions """
     model = load_model(chip_type)
     result = run_CNN(model,pred_dict)
 

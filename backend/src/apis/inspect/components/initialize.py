@@ -26,16 +26,18 @@ def create_border_img(image, save_dir):
 
 def check_dir(image, lot_no, db):
     
+    plate_no = image.filename.split(".")[0]
+
     backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
     lot_dir = os.path.join(backend_dir,'images',datetime.now().strftime("%b%y"),lot_no)
-    save_dir = os.path.join(lot_dir,image.filename.split(".")[0])
+    save_dir = os.path.join(lot_dir,plate_no)
     pred_dir = os.path.join(save_dir,"pred")
 
     NG = {"Stray": []}
     no_of_chips = 0
     if lot_no.lower()[:4] == "test" and os.path.isdir(lot_dir): rmtree(lot_dir)
     if os.path.isdir(pred_dir) and any(os.scandir(pred_dir)): 
-        ratio = get_ratio(lot_no=lot_no, db=db)
+        ratio = get_ratio(lot_no=lot_no, plate_no=plate_no, db=db)
         no_of_chips = ratio.no_of_chips
         for i in range(len(ratio.no_of_batches)): NG[f"Batch {i+1}"] = []
         for prevChips in os.listdir(pred_dir):
