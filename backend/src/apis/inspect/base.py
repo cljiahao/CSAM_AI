@@ -1,9 +1,6 @@
 import os
 import cv2
-import requests
-from shutil import copyfileobj, rmtree, copyfile
 
-from core.config import settings
 from apis.inspect.components.batch_process import mask
 from apis.inspect.components.chip_process import chips
 from apis.inspect.components.predict_ng import prediction
@@ -47,7 +44,7 @@ def inspect(image, lot_no, chip_type, db):
     ng_dict.update(pred_dict_res)                                                   # Update ng_dict with predicted ng
 
     no_of_batches = len(batch_data)
-    NG = {"Stray":[]}
+    NG = {}
     for i in range(no_of_batches): NG[f"Batch {i+1}"] = []
 
     for key,value in ng_dict.items():
@@ -56,6 +53,7 @@ def inspect(image, lot_no, chip_type, db):
         cv2.imwrite(os.path.join(pred_dir,key),ng_img)                              # Writing NG images into directory
 
         if int(key.split("_")[1]) != 0 : NG["Batch " + key.split("_")[1]].append(key)
-        else: NG["Stray"].append(key)
+        elif "Stray" in NG.keys(): NG["Stray"].append(key)
+        else: NG["Stray"] = []
 
     return NG, save_dir, img_shape, no_of_batches, no_of_chips

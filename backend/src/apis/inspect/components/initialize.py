@@ -33,7 +33,7 @@ def check_dir(image, lot_no, db):
     save_dir = os.path.join(lot_dir,plate_no)
     pred_dir = os.path.join(save_dir,"pred")
 
-    NG = {"Stray": []}
+    NG = {}
     no_of_chips = 0
     if lot_no.lower()[:4] == "test" and os.path.isdir(lot_dir): rmtree(lot_dir)
     if os.path.isdir(pred_dir) and any(os.scandir(pred_dir)): 
@@ -43,7 +43,8 @@ def check_dir(image, lot_no, db):
         for prevChips in os.listdir(pred_dir):
             if prevChips.split(".")[-1] == ".png":
                 if int(prevChips.split("_")[1]) != 0: NG["Batch " + prevChips.split("_")[1]].append(prevChips)
-                else: NG["Stray"].append(prevChips)
+                elif "Stray" in NG.keys(): NG["Stray"].append(prevChips)
+                else: NG["Stray"] = []
     else: 
         if os.path.isdir(save_dir): rmtree(save_dir) 
         os.makedirs(pred_dir)

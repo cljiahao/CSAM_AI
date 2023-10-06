@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class ShowNG(BaseModel):
-    filename: str
+    plate_no: str
     ng_chips: dict
     img_shape: list
     no_of_batches: str

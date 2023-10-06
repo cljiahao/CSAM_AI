@@ -1,3 +1,4 @@
+import os
 import sys
 
 sys.path.append('./')
@@ -32,6 +33,8 @@ def include_router(app):
 
 
 def configure_staticfiles(app):
+    parent_dir = os.path.dirname(os.path.dirname(__file__))
+    app.mount("/images", StaticFiles(directory=os.path.join(parent_dir,"images")), name="images")
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
