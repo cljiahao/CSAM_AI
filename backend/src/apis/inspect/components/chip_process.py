@@ -37,7 +37,7 @@ def chips(border_img, batch_data) -> dict:
                                                 int(yc-20)
                                                 )
             src_pts = cv2.boxPoints(((xc,yc), settings.IMAGESIZE, theta))
-            rotated_img = rotate_chips(border_img.copy(), h, w, src_pts)
+            rotated_img = rotate_chips(border_img, h, w, src_pts)
             rotated_img = cv2.cvtColor(rotated_img, cv2.COLOR_BGR2RGB)
 
             if chip_area < lower_def_area or upper_def_area < chip_area: ng_dict[fName] = rotated_img
