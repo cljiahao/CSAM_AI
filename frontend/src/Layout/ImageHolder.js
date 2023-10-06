@@ -1,15 +1,19 @@
-import React from 'react'
-import PanAndZoomImage from '../Components/PanAndZoom'
+import React from "react";
+import PanAndZoomImage from "../Components/PanAndZoom";
 
-export default function ImageHolder({ mainImage, ngChips, focus, setFocus }) {
+export default function ImageHolder({ main_image, ng_chips, focus, setFocus }) {
   return (
-    <div className='imageholder'>
-      {mainImage.src ? 
-        <PanAndZoomImage  mainImage={mainImage}
-                          chips={ngChips}
-                          focus={focus}
-                          setFocus={setFocus} />
-        :<section className='placeholder' />}
+    <div className="imageholder">
+      {main_image.src ? (
+        <PanAndZoomImage
+          main_image={main_image}
+          ng_chips={ng_chips}
+          focus={focus}
+          setFocus={setFocus}
+        />
+      ) : (
+        <section className="placeholder" />
+      )}
     </div>
-  )
+  );
 }

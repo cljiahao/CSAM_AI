@@ -1,30 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { InfoBar, ImageHolder, Gallery } from "./Layout";
+import { InfoBar, ImageHolder, Gallery } from "./layout";
 
 const API = process.env.REACT_APP_API;
 const initialState = {
   error: false,
-  mainImage: { src: null, alt: null },
+  main_image: { src: null, alt: null },
 };
 const initialData = {
-  baseUrl: null,
-  ngChips: null,
   directory: null,
-  chipType: null,
+  plate_no: null,
+  ng_chips: null,
+  chip_type: null,
 };
 const initialInfo = {
-  noOfChips: 0,
-  ngCounts: 0,
-  actual: 0,
+  no_of_chips: 0,
+  no_of_batches: 0,
+  pred_ng: 0,
+  real_ng: 0,
 };
 const initialFocus = {
-  imageSize: { width: 0, height: 0 },
+  img_shape: { width: 0, height: 0 },
   state: false,
   x: 0,
   y: 0,
   scale: 1,
 };
-let lotNumber = "";
+let lot_no = "";
 
 export default function App() {
   const [state, setState] = useState(initialState);
@@ -35,15 +36,16 @@ export default function App() {
 
   useEffect(() => {
     const load = () => {
-      if (!state.error && lotNumber) {
+      if (!state.error && lot_no) {
         insertDB(
-          lotNumber,
+          lot_no,
           array,
-          info.noOfChips,
-          info.ngCounts,
-          info.actual,
+          info.no_of_batches,
+          info.no_of_chips,
+          info.pred_ng,
+          info.real_ng,
           data.directory,
-          data.chipType
+          data.chip_type
         );
       }
     };
@@ -54,19 +56,20 @@ export default function App() {
   }, [array]);
 
   function initialize() {
-    if (!state.error && lotNumber) {
+    if (!state.error && lot_no) {
       insertDB(
-        lotNumber,
+        lot_no,
         array,
-        info.noOfChips,
-        info.ngCounts,
-        info.actual,
+        info.no_of_batches,
+        info.no_of_chips,
+        info.pred_ng,
+        info.real_ng,
         data.directory,
-        data.chipType
+        data.chip_type
       );
     }
-    if (lotNumber === "" || lotNumber === null || state.error)
-      lotNumber = prompt("Please scan or input Lot Number", "");
+    if (lot_no === "" || lot_no === null || state.error)
+      lot_no = prompt("Please scan or input Lot Number", "");
     setInfo(initialInfo);
     setState(initialState);
     setData(initialData);
@@ -74,55 +77,79 @@ export default function App() {
     setArray({});
   }
 
-  function errorHandling(file, json) {
-    if (json.error === true)
-      setState({
-        ...state,
-        error: true,
-        mainImage: { src: "Error/Error.png", alt: "Error.png" },
-      });
-    else if (json.LotNum === true)
-      setState({
-        ...state,
-        error: true,
-        mainImage: { src: "Error/LotNum.png", alt: "LotNum.png" },
-      });
-    else {
-      const baseUrl = json.directory.split("build")[1];
-      const directory = json.directory;
-      const ngChips = json.ng;
-      const chipType = json.chipType;
-      Object.keys(ngChips).map((key, index) => {
-        return (ngChips[key] = Object.assign(
-          {},
-          ...json.ng[key].map((imgFile) => {
-            const img = imgFile.split(".")[0];
-            const [id, x, y] = img.split("_").slice(-3);
-            const filename = imgFile;
-            const color = null;
-            const markerRadius = null;
-            return { [id]: { x, y, color, filename, markerRadius } };
-          })
-        ));
-      });
-      setState({
-        ...state,
-        error: false,
-        mainImage: { src: baseUrl + "/Original/" + file.name, alt: file.name },
-      });
-      setInfo({ noOfChips: json.noOfChips, ngCounts: json.ngCount, actual: 0 });
-      setFocus({
-        ...focus,
-        imageSize: { width: json.size[0], height: json.size[1] },
-      });
-      setData({ baseUrl, ngChips, directory, chipType });
-      if (
-        json.filename.slice(0, 3)[0].toLowerCase() === "end" ||
-        lotNumber === null
-      )
-        lotNumber = "";
-    }
+  function dataProcess(file, json) {
+    const plate_no = json.plate_no;
+    const ng_chips = json.ng_chips;
+    const img_shape = json.img_shape;
+    const no_of_batches = json.no_of_batches;
+    const no_of_chips = json.no_of_chips;
+    const ng_count = json.ng_count;
+    const directory = json.directory;
+    const chip_type = json.chip_type;
+
+    Object.keys(ng_chips).map((key, index) => {
+      return (ng_chips[key] = Object.assign(
+        {},
+        ...json.ng_chips[key].map((filename) => {
+          const img_name = filename.split(".")[0];
+          const [id, x, y] = img_name.split("_").slice(-3);
+          const fname = filename;
+          const color = null;
+          const marker_radius = null;
+          return { [id]: { x, y, color, fname, marker_radius } };
+        })
+      ));
+    });
+    setState({
+      ...state,
+      error: false,
+      main_image: {
+        src: `${API}${directory.split("backend")[1]}/Original/${file.name}`,
+        alt: file.name,
+      },
+    });
+    setInfo({
+      no_of_batches: no_of_batches,
+      no_of_chips: no_of_chips,
+      pred_ng: ng_count,
+      real_ng: 0,
+    });
+    setFocus({
+      ...focus,
+      img_shape: { width: img_shape[0], height: img_shape[1] },
+    });
+    setData({
+      directory: directory,
+      plate_no: plate_no,
+      ng_chips: ng_chips,
+      chip_type: chip_type,
+    });
+    if (json.filename.slice(0, 3)[0].toLowerCase() === "end" || lot_no === null)
+      lot_no = "";
   }
+
+  const errorHandling = async (file, res) => {
+    if (res.status === "404") {
+      setState({
+        ...state,
+        error: true,
+        main_image: {
+          src: "Error/Error_Lot_Num.png",
+          alt: "Error_Lot_Num.png",
+        },
+      });
+    } else if (res.status === "400") {
+      setState({
+        ...state,
+        error: true,
+        main_image: { src: "Error/Error.png", alt: "Error.png" },
+      });
+    } else {
+      const json = await res.json();
+
+      dataProcess(file, json);
+    }
+  };
 
   const loadImage = async (e) => {
     e.preventDefault();
@@ -132,14 +159,13 @@ export default function App() {
     if (file) {
       setState({
         ...state,
-        mainImage: { src: "Error/loading.gif", alt: "loading.gif" },
+        main_image: { src: "Error/Loading.gif", alt: "Loading.gif" },
       });
-
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("lotNumber", lotNumber);
+      formData.append("lot_no", lot_no);
 
-      const res = await fetch(`${API}/uploadfile`, {
+      const res = await fetch(`${API}/upload_file`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -147,34 +173,45 @@ export default function App() {
         body: formData,
       });
 
-      const json = await res.json();
-
-      errorHandling(file, json);
+      errorHandling(file, res);
     }
   };
 
-  const insertDB = async (lot, arr, chipno, ngcnt, act, dir, type) => {
-    const dbForm = new FormData();
-    dbForm.append("lot_no", lot);
-    dbForm.append("actual", Object.values(arr));
-    dbForm.append("no_of_chips", chipno);
-    dbForm.append("pred_ng", ngcnt);
-    dbForm.append("real_ng", act);
-    dbForm.append("directory", dir);
-    dbForm.append("chip_type", type);
+  const insertDB = async (
+    lot_no,
+    actual,
+    no_of_batches,
+    no_of_chips,
+    pred_ng,
+    real_ng,
+    directory,
+    chip_type
+  ) => {
+    const data = {
+      lot_no: lot_no,
+      actual: Object.values(actual),
+      no_of_batches: no_of_batches,
+      no_of_chips: no_of_chips,
+      pred_ng: pred_ng,
+      real_ng: real_ng,
+      directory: directory,
+      chip_type: chip_type,
+    };
 
     await fetch(`${API}/insertDB`, {
       method: "POST",
-      headers: { Accept: "application/json" },
-      body: dbForm,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     });
   };
 
   return (
     <main className="main">
       <ImageHolder
-        mainImage={state.mainImage}
-        ngChips={data.ngChips}
+        main_image={state.main_image}
+        ng_chips={data.ng_chips}
         focus={focus}
         setFocus={setFocus}
       />
@@ -182,8 +219,8 @@ export default function App() {
         <InfoBar
           upload={loadImage}
           info={info}
-          lotNumber={lotNumber}
-          filename={state.mainImage.alt}
+          lot_no={lot_no}
+          filename={data.plate_no}
         />
         <Gallery
           array={array}
