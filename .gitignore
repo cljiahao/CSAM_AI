@@ -1,6 +1,6 @@
 __pycache__
 .env
 env
-test_db.db
+sql_app.db
 backend/images
 temp.jpg
