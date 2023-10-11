@@ -11,7 +11,7 @@ export default function InfoBar({ upload, info, lot_no, filename }) {
           <p className="inforbar-li-p">{lot_no}</p>
         </li>
         <li className="infobar-li">
-          File:
+          Plate Number:
           <p className="inforbar-li-p">{filename}</p>
         </li>
         <li className="infobar-li">
