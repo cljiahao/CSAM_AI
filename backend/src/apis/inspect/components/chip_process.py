@@ -29,9 +29,7 @@ def chips(border_img, batch_data) -> dict:
 
             no_of_chips += 1
             batch = find_batch_no(xc, yc, batch_data)
-            fName = "{}_{}_{}_{}_{}.png".format(time.strftime("%Y%m%d%H%M",
-                                                time.localtime(time.time())),
-                                                batch,
+            fName = "{}_{}_{}_{}_{}.png".format(batch,
                                                 no_of_chips,
                                                 int(xc-20),
                                                 int(yc-20)
