@@ -34,6 +34,7 @@ def include_router(app):
 
 def configure_staticfiles(app):
     parent_dir = os.path.dirname(os.path.dirname(__file__))
+    if not os.path.exists(os.path.join(parent_dir,"images")): os.makedirs(os.path.join(parent_dir,"images"))
     app.mount("/images", StaticFiles(directory=os.path.join(parent_dir,"images")), name="images")
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
