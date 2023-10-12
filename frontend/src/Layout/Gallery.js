@@ -17,10 +17,9 @@ export default function Gallery({
       default: null,
       zoom: "chartreuse",
       highlight: "yellow",
-      highlight2: "aqua",
     },
     radius: { default: null, zoom: 10, highlight: 1 },
-    bord: { default: null, highlight: "2px solid red" },
+    border: { default: null, highlight: "2px solid red" },
   };
   const ng_chips = data.ng_chips;
 
@@ -28,8 +27,8 @@ export default function Gallery({
     let target = ng_chips[zone][key];
     if (target.color === "chartreuse" || target.color == null) {
       target.color = marker.color.highlight;
-      target.markerRadius = marker.radius.highlight;
-      target.border = marker.bord.highlight;
+      target.marker_radius = marker.radius.highlight;
+      target.border = marker.border.highlight;
       setArray({ ...array, [target.filename]: target.filename });
       let count = info.real_ng;
       setInfo({ ...info, real_ng: count + 1 });
@@ -38,11 +37,6 @@ export default function Gallery({
       target.color = marker.color.highlight2;
       delete array[target.filename];
       setArray(array);
-      setData({ ...data, data: { ...ng_chips, [key]: target } });
-    } else if (target.color === "aqua") {
-      target.color = marker.color.default;
-      target.markerRadius = marker.radius.default;
-      target.border = marker.bord.default;
       let count = info.real_ng;
       setInfo({ ...info, real_ng: count - 1 });
       setData({ ...data, data: { ...ng_chips, [key]: target } });
@@ -56,7 +50,7 @@ export default function Gallery({
     let target = ng_chips[zone][key];
     if (target.color == null) {
       target.color = marker.color.zoom;
-      target.markerRadius = marker.radius.zoom;
+      target.marker_radius = marker.radius.zoom;
       setData({ ...data, data: { ...ng_chips, [key]: target } });
     }
   };
@@ -66,7 +60,7 @@ export default function Gallery({
     let target = ng_chips[zone][key];
     if (target.color === "chartreuse") {
       target.color = marker.color.default;
-      target.markerRadius = marker.radius.default;
+      target.marker_radius = marker.radius.default;
       setData({ ...data, data: { ...ng_chips, [key]: target } });
     }
   };
