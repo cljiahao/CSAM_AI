@@ -3,4 +3,5 @@ __pycache__
 env
 sql_app.db
 backend/images
+temp.png
 temp.jpg

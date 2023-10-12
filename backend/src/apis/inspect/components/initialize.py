@@ -14,7 +14,12 @@ def create_border_img(image, save_dir):
 
     ori_dir = os.path.join(save_dir,"original")
     if not os.path.exists(ori_dir): 
-        os.makedirs(ori_dir)      
+        os.makedirs(ori_dir)
+        copyfile("tmp/temp.jpg",os.path.join(ori_dir,image.filename))
+    else:
+        no_of_files = len(os.listdir(ori_dir))
+        new_fname = f"{image.filename.split('.')[0]}_{no_of_files}.jpg"
+        os.rename(os.path.join(ori_dir,image.filename),os.path.join(ori_dir,new_fname))
         copyfile("tmp/temp.jpg",os.path.join(ori_dir,image.filename))
 
     image = cv2.imread(tempFile)
