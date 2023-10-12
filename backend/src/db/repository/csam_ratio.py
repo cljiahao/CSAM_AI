@@ -13,11 +13,11 @@ from db.models.csam_ratio import CSAM_RATIO
 
 def move_ng(directory,actual):
 
-    temp_dir = os.path.join(directory,"temp")
-    ng_dir = os.path.join(directory,"NG")
-    if not os.path.isdir(ng_dir): os.makedirs(ng_dir)
+    pred_dir = os.path.join(directory,"pred")
+    real_dir = os.path.join(directory,"real")
+    if not os.path.isdir(real_dir): os.makedirs(real_dir)
 
-    for fname in actual.split(","): move(os.path.join(temp_dir,fname),os.path.join(ng_dir,fname),copy_function=copyfile)
+    for fname in actual.split(","): move(os.path.join(pred_dir,fname),os.path.join(real_dir,fname),copy_function=copyfile)
 
 
 def get_ratio(lot_no: str, plate_no: str, db: Session):
