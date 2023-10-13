@@ -16,16 +16,18 @@ def selected_ng(directory,actual):
     pred_dir = os.path.join(directory,"pred")
     real_dir = os.path.join(directory,"real")
     if not os.path.isdir(real_dir): os.makedirs(real_dir)
-
-    move_files(actual,pred_dir,real_dir,"0","1")
+    print(actual)
     to_move_back = list(set(actual).symmetric_difference(set(os.listdir(real_dir))))
     move_files(to_move_back,real_dir,pred_dir,"1","0")
+    move_files(actual,pred_dir,real_dir,"0","1")
 
 
 def move_files(files,src,dest,code_from,code_to):
+
     for fname in files:
         if fname.split(".")[-1] == "png" and fname[0] == code_from:
-            move(os.path.join(src,fname),os.path.join(dest,code_to+fname[1:]),copy_function=copyfile)
+            if os.path.isfile(os.path.join(src,fname)):
+                move(os.path.join(src,fname),os.path.join(dest,code_to+fname[1:]),copy_function=copyfile)
 
 
 def get_ratio(lot_no: str, plate_no: str, db: Session):
