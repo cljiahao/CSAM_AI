@@ -90,7 +90,7 @@ export default function App() {
     const chip_type = json.chip_type;
 
     let real_ng = 0;
-    const holder = {}
+    const array = {}
 
     Object.keys(ng_chips).map((key, index) => {
       return (ng_chips[key] = Object.assign(

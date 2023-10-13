@@ -29,7 +29,8 @@ export default function Gallery({
       target.color = marker.color.highlight;
       target.marker_radius = marker.radius.highlight;
       target.border = marker.border.highlight;
-      setArray({ ...array, [target.fname]: target.fname });
+      array[target.fname] = target.fname
+      setArray({ ...array});
       let count = info.real_ng;
       setInfo({ ...info, real_ng: count + 1 });
       setData({ ...data, data: { ...ng_chips, [key]: target } });
