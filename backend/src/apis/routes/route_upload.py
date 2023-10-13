@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from core.config import settings
 from db.session import get_db
-from db.repository.csam_ratio import create_ratio, get_db_data
+from db.repository.csam_ratio import create_new_ratio, get_db_data
 from schemas.ratio import CreateRatio
 from schemas.ng import ShowNG
 
@@ -50,7 +50,7 @@ def predict_NG_chips(file: UploadFile = File(...), lot_no: str = Form(...), db: 
 
 @router.post("/insert_db")
 def insert_db(ratio: CreateRatio, db: Session = Depends(get_db)):
-    ratio = create_ratio(ratio=ratio, db=db)
+    ratio = create_new_ratio(ratio=ratio, db=db)
     return ratio
 
 

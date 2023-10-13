@@ -46,7 +46,7 @@ def create_csv(ratio, directory):
     return file_path
 
 
-def create_ratio(ratio: CreateRatio, db: Session = Depends(get_db)):
+def create_new_ratio(ratio: CreateRatio, db: Session = Depends(get_db)):
     
     ratio_dict = ratio.model_dump()
 
@@ -65,7 +65,7 @@ def create_ratio(ratio: CreateRatio, db: Session = Depends(get_db)):
             NG Ratio: {ng_ratio}% FakeRatio: {fake_ratio}%")
 
     ratio = CSAM_RATIO(
-        **ratio_dict, ng_ratio=ng_ratio, fake_ratio=fake_ratio
+        **ratio_dict, ng_ratio=str(ng_ratio), fake_ratio=str(fake_ratio)
     )
     
     db.add(ratio)
