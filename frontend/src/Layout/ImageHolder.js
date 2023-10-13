@@ -1,5 +1,5 @@
 import React from "react";
-import PanAndZoomImage from "../Components/PanAndZoom";
+import PanAndZoomImage from "../components/PanAndZoom";
 
 export default function ImageHolder({ main_image, ng_chips, focus, setFocus }) {
   return (
