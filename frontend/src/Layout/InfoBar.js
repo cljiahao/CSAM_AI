@@ -1,5 +1,5 @@
 import React from "react";
-import Input from "../Components/Input";
+import Input from "../components/Input";
 
 export default function InfoBar({ upload, info, lot_no, filename }) {
   return (

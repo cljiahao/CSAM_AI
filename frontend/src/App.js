@@ -39,6 +39,7 @@ export default function App() {
       if (!state.error && lot_no) {
         insertDB(
           lot_no,
+          data.plate_no,
           array,
           info.no_of_batches,
           info.no_of_chips,
@@ -59,6 +60,7 @@ export default function App() {
     if (!state.error && lot_no) {
       insertDB(
         lot_no,
+        data.plate_no,
         array,
         info.no_of_batches,
         info.no_of_chips,
@@ -87,19 +89,31 @@ export default function App() {
     const directory = json.directory;
     const chip_type = json.chip_type;
 
+    let real_ng = 0;
+    const holder = {}
+
     Object.keys(ng_chips).map((key, index) => {
       return (ng_chips[key] = Object.assign(
         {},
         ...json.ng_chips[key].map((filename) => {
           const img_name = filename.split(".")[0];
-          const [id, x, y] = img_name.split("_").slice(-3);
+          const [ng_g, batch, id, x, y] = img_name.split("_");
           const fname = filename;
-          const color = null;
-          const marker_radius = null;
-          return { [id]: { x, y, color, fname, marker_radius } };
+          let color = null;
+          let marker_radius = null;
+          let border = null;
+          if (ng_g === "1") {
+            color = "yellow";
+            marker_radius = 1;
+            border = "2px solid red";
+            real_ng += 1;
+            array[fname] = fname
+          }
+          return { [id]: { ng_g, x, y, color, fname, marker_radius, border } };
         })
       ));
     });
+    setArray({ ...array })
     setState({
       ...state,
       error: false,
@@ -112,7 +126,7 @@ export default function App() {
       no_of_batches: no_of_batches,
       no_of_chips: no_of_chips,
       pred_ng: ng_count,
-      real_ng: 0,
+      real_ng: real_ng,
     });
     setFocus({
       ...focus,
@@ -124,7 +138,7 @@ export default function App() {
       ng_chips: ng_chips,
       chip_type: chip_type,
     });
-    if (json.filename.slice(0, 3)[0].toLowerCase() === "end" || lot_no === null)
+    if (json.plate_no.slice(0, 3)[0].toLowerCase() === "end" || lot_no === null)
       lot_no = "";
   }
 
@@ -179,6 +193,7 @@ export default function App() {
 
   const insertDB = async (
     lot_no,
+    plate_no,
     actual,
     no_of_batches,
     no_of_chips,
@@ -189,6 +204,7 @@ export default function App() {
   ) => {
     const data = {
       lot_no: lot_no,
+      plate_no: plate_no,
       actual: Object.values(actual),
       no_of_batches: no_of_batches,
       no_of_chips: no_of_chips,
@@ -198,7 +214,7 @@ export default function App() {
       chip_type: chip_type,
     };
 
-    await fetch(`${API}/insertDB`, {
+    await fetch(`${API}/insert_db`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

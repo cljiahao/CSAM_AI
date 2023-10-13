@@ -18,8 +18,9 @@ export default function Thumbnail({
           onMouseEnter={(e) => focusOnChip(e, key, zone)}
           onMouseLeave={() => unfocusOnChip(key, zone)}
           src={`${process.env.REACT_APP_API}${
-            directory.split("backend")[1]
-          }/pred/${data[key].fname}`}
+                directory.split("backend")[1]}/${
+                data[key].ng_g === "1" ? "real" : "pred"}/${
+                data[key].fname}`}
           style={{ border: data[key].border }}
           alt={data[key].fname}
         />

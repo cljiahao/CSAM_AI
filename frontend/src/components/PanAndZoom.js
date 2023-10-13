@@ -128,7 +128,7 @@ const PanAndZoom = ({ main_image, ng_chips, focus, setFocus }) => {
       />
       {Object.keys(ng_chips).map((key, index) => {
         return Object.keys(ng_chips[key]).map((k, i) => {
-          const { x, y, color, markerRadius } = ng_chips[key][k];
+          const { x, y, color, fname, marker_radius, border } = ng_chips[key][k];
           const cx = (x * display.width) / focus.img_shape.width;
           const cy = (y * display.height) / focus.img_shape.height;
           return (
@@ -136,7 +136,7 @@ const PanAndZoom = ({ main_image, ng_chips, focus, setFocus }) => {
               key={k}
               cx={cx}
               cy={cy}
-              r={markerRadius}
+              r={marker_radius}
               stroke={color}
               strokeWidth="2"
               fillOpacity="0"

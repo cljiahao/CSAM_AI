@@ -1,5 +1,5 @@
 import React from "react";
-import TBZone from "../Components/TBZone";
+import TBZone from "../components/TBZone";
 
 export default function Gallery({
   array,
@@ -29,13 +29,15 @@ export default function Gallery({
       target.color = marker.color.highlight;
       target.marker_radius = marker.radius.highlight;
       target.border = marker.border.highlight;
-      setArray({ ...array, [target.filename]: target.filename });
+      setArray({ ...array, [target.fname]: target.fname });
       let count = info.real_ng;
       setInfo({ ...info, real_ng: count + 1 });
       setData({ ...data, data: { ...ng_chips, [key]: target } });
     } else if (target.color === "yellow") {
-      target.color = marker.color.highlight2;
-      delete array[target.filename];
+      target.color = marker.color.default;
+      target.marker_radius = marker.radius.default;
+      target.border = marker.border.default;
+      delete array[target.fname];
       setArray(array);
       let count = info.real_ng;
       setInfo({ ...info, real_ng: count - 1 });

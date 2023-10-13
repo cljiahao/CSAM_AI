@@ -40,16 +40,15 @@ def check_dir(image, lot_no, db):
     real_dir = os.path.join(save_dir,"real")
 
     NG = {}
-    no_of_chips = 0
+    no_of_batches,no_of_chips = 0,0
     if lot_no.lower()[:4] == "test" and os.path.isdir(lot_dir): rmtree(lot_dir)                 # Testing directory to be remove every testing
     if os.path.isdir(pred_dir) and any(os.scandir(pred_dir)):
         ratio = get_ratio(lot_no=lot_no, plate_no=plate_no, db=db)                              # Pull data from database for caching
-        no_of_chips = ratio.no_of_chips
         no_of_batches = ratio.no_of_batches
-        for i in range(len(no_of_batches)): NG[f"Batch {i+1}"] = []
-        caching(pred_dir,NG)
-        if os.path.isdir(real_dir) and any(os.scandir(real_dir)): caching(real_dir,NG,True)
-
+        no_of_chips = ratio.no_of_chips
+        for i in range(no_of_batches): NG[f"Batch {i+1}"] = []
+        NG = caching(pred_dir,NG)
+        if os.path.isdir(real_dir) and any(os.scandir(real_dir)): NG = caching(real_dir,NG,True)
     else: 
         if os.path.isdir(save_dir): rmtree(save_dir) 
         os.makedirs(pred_dir)
@@ -60,7 +59,7 @@ def check_dir(image, lot_no, db):
 def caching(directory,chips,ng=False):
 
     for file in os.listdir(directory):
-        if file.split(".")[-1] == ".png":
+        if file.split(".")[-1] == "png":
             if ng: file = "1"+file[1:]
             if int(file.split("_")[1]) != 0: chips[f"Batch {file.split('_')[1]}"].append(file)
             elif "Stray" in chips.keys(): chips["Stray"].append(file)
