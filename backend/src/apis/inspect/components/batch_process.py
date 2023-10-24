@@ -24,9 +24,10 @@ def mask_batch(img):
         A masked image of non background
     """
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    blur = cv2.blur(gray,(25,25))
+    blur = cv2.blur(gray,(27,27))
     th, ret = cv2.threshold(blur,150,255,cv2.THRESH_BINARY_INV)
-    morph = cv2.morphologyEx(ret,cv2.MORPH_CLOSE,np.ones((25,25),np.uint8))     # Merge neighbouring chips to form a huge blob mask
+    morph = cv2.morphologyEx(ret,cv2.MORPH_CLOSE,np.ones((11,35),np.uint8))     # Merge neighbouring chips to form a huge blob mask
+    morph = cv2.morphologyEx(morph,cv2.MORPH_ERODE,np.ones((3,3),np.uint8))     # Erode to prevent merging between batches
 
     return morph
 
