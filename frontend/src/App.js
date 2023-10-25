@@ -225,12 +225,14 @@ export default function App() {
 
   return (
     <main className="main">
-      <ImageHolder
-        main_image={state.main_image}
-        ng_chips={data.ng_chips}
-        focus={focus}
-        setFocus={setFocus}
-      />
+      <div className="main-main">
+        <ImageHolder
+          main_image={state.main_image}
+          ng_chips={data.ng_chips}
+          focus={focus}
+          setFocus={setFocus}
+        />
+      </div>
       <div className="main-side">
         <InfoBar
           upload={loadImage}

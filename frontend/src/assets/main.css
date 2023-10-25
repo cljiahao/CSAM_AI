@@ -3,5 +3,9 @@
 }
 
 .main-side {
-  @apply flex flex-col w-2/5;
+  @apply flex flex-col w-[38%];
+}
+
+.main-main {
+  @apply flex w-[62%]
 }

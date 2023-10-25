@@ -1,5 +1,5 @@
 .gallery {
-    @apply bg-gray-100 border-l-2 border-gray-300 w-full overflow-y-auto;
+    @apply bg-gray-100 border-l-2 border-gray-300 w-fit overflow-y-auto;
 }
 
 .zone-cont {
