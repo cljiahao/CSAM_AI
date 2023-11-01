@@ -11,65 +11,99 @@ from db.session import get_db
 from db.models.csam_ratio import CSAM_RATIO
 
 
-def selected_ng(directory,actual):
+def selected(directory, ng_chip_dict):
+    holder = {}
+    folders = os.listdir(directory)
+    folders.remove("original")
+    for fol in folders:
+        for os_file in os.listdir(os.path.join(directory, fol)):
+            holder[os_file] = fol
 
-    pred_dir = os.path.join(directory,"pred")
-    real_dir = os.path.join(directory,"real")
-    if not os.path.isdir(real_dir): os.makedirs(real_dir)
-    print(actual)
-    to_move_back = list(set(actual).symmetric_difference(set(os.listdir(real_dir))))
-    move_files(to_move_back,real_dir,pred_dir,"1","0")
-    move_files(actual,pred_dir,real_dir,"0","1")
+    for key in ng_chip_dict:
+        move_to_dir = os.path.join(directory, key)
+        if not os.path.isdir(move_to_dir):
+            os.makedirs(move_to_dir)
+
+        for file in ng_chip_dict[key]:
+            try:
+                move_files(file, directory, holder[file], key)
+                holder.pop(file)
+            except:
+                if f"1{file[1:]}" in holder.keys():
+                    move_files(f"1{file[1:]}", directory, holder[f"1{file[1:]}"], key)
+                    holder.pop(f"1{file[1:]}")
+                else:
+                    move_files(f"2{file[1:]}", directory, holder[f"2{file[1:]}"], key)
+                    holder.pop(f"2{file[1:]}")
+
+    for k, v in holder.items():
+        if v == "pred":
+            continue
+        move_files(k, directory, v, "pred")
 
 
-def move_files(files,src,dest,code_from,code_to):
+def move_files(filename, directory, prev, next):
+    file_mode = {"pred": "0", "real": "1", "others": "2"}
+    src = os.path.join(directory, prev)
+    dest = os.path.join(directory, next)
 
-    for fname in files:
-        if fname.split(".")[-1] == "png" and fname[0] == code_from:
-            if os.path.isfile(os.path.join(src,fname)):
-                move(os.path.join(src,fname),os.path.join(dest,code_to+fname[1:]),copy_function=copyfile)
+    if filename.split(".")[-1] == "png" and filename[0] == file_mode[prev]:
+        if os.path.isfile(os.path.join(src, filename)):
+            move(
+                os.path.join(src, filename),
+                os.path.join(dest, file_mode[next] + filename[1:]),
+                copy_function=copyfile,
+            )
 
 
 def get_ratio(lot_no: str, plate_no: str, db: Session):
+    ratio = (
+        db.query(CSAM_RATIO)
+        .filter(CSAM_RATIO.lot_no == lot_no, CSAM_RATIO.plate_no == plate_no)
+        .first()
+    )
 
-    ratio = db.query(CSAM_RATIO).filter(CSAM_RATIO.lot_no == lot_no, CSAM_RATIO.plate_no == plate_no).first()
-    
     return ratio
 
 
 def create_csv(ratio, directory):
-
     data = ",,,"
-    for k in range(len(ratio)): data += f"{ratio[k]},"
+    for k in range(len(ratio)):
+        data += f"{ratio[k]},"
     file_name = f"{settings.TABLEID}_{dt.now().strftime('%d%m%y')}_{dt.now().strftime('%H%M%S')}.csv"
-    file_path = os.path.join(directory,file_name)
-    with open(file_path, 'w') as f: f.write(data[:-1])
+    file_path = os.path.join(directory, file_name)
+    with open(file_path, "w") as f:
+        f.write(data[:-1])
 
     return file_path
 
 
 def create_new_ratio(ratio: CreateRatio, db: Session = Depends(get_db)):
-    
     ratio_dict = ratio.model_dump()
 
-    directory = ratio_dict.pop('directory')
-    actual = ratio_dict.pop('actual')
-    selected_ng(directory=directory, actual=actual)
+    directory = ratio_dict.pop("directory")
+    ng_list = ratio_dict.pop("ng_list")
+    others_list = ratio_dict.pop("others_list")
+    ng_chip_dict = {"real": ng_list, "others": others_list}
+    selected(directory=directory, ng_chip_dict=ng_chip_dict)
 
-    no_of_chips = ratio_dict['no_of_chips']
-    real_ng = ratio_dict['real_ng']
-    pred_ng = ratio_dict['pred_ng']
-    ng_ratio = round(real_ng/no_of_chips*100,2)
-    fake_ratio = round(real_ng/pred_ng*100,2) if pred_ng != 0 else 0
-
-    print(f"Previous Lot Number: {ratio_dict['lot_no']} \
-            Pred NG: {pred_ng} Real NG: {real_ng} \
-            NG Ratio: {ng_ratio}% FakeRatio: {fake_ratio}%")
-
-    ratio = CSAM_RATIO(
-        **ratio_dict, ng_ratio=str(ng_ratio), fake_ratio=str(fake_ratio)
+    no_of_chips = ratio_dict["no_of_chips"]
+    no_of_ng = ratio_dict["no_of_ng"]
+    no_of_others = ratio_dict["no_of_others"]
+    no_of_pred = ratio_dict["no_of_pred"]
+    ng_ratio = round((no_of_ng + no_of_others) / no_of_chips * 100, 2)
+    fake_ratio = (
+        round((no_of_ng + no_of_others) / no_of_pred * 100, 2) if no_of_pred != 0 else 0
     )
-    
+
+    print(
+        f"Previous Lot Number: {ratio_dict['lot_no']} \
+            Pred NG: {no_of_pred} Real NG: {(no_of_ng+no_of_others)} \
+            NG Ratio: {ng_ratio}% FakeRatio: {fake_ratio}%"
+    )
+
+    ratio = CSAM_RATIO(**ratio_dict, ng_ratio=str(ng_ratio), fake_ratio=str(fake_ratio))
+
     db.add(ratio)
     db.commit()
     db.refresh(ratio)
@@ -85,7 +119,6 @@ def create_new_ratio(ratio: CreateRatio, db: Session = Depends(get_db)):
 
 
 def get_db_data(db: Session):
-
     ratio = db.query(CSAM_RATIO).first()
     print(ratio)
 

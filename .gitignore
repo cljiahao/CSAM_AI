@@ -1,7 +1,9 @@
 __pycache__
 .env
 env
-sql_app.db
+csam_ai.db
+test.db
 backend/images
 temp.png
 temp.jpg
+test/assets/csam_img
