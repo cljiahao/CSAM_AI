@@ -61,10 +61,10 @@ def check_dir(image, lot_no, db):
 
     Returns
     -------
-    no_of_chips : int
-        Number of chips
     no_of_batches : int
         Number of batches
+    no_of_chips : int
+        Number of chips
     chips_dict : dict
         Chip filename saved in dictionary by batches
     save_dir :
@@ -113,7 +113,7 @@ def check_dir(image, lot_no, db):
             rmtree(save_dir)
         os.makedirs(pred_dir)
 
-    return no_of_chips, no_of_batches, chips_dict, save_dir, pred_dir
+    return no_of_batches, no_of_chips, chips_dict, save_dir, pred_dir
 
 
 def caching(directory, chips):

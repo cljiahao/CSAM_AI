@@ -48,7 +48,7 @@ def inspect(image, lot_no, chip_type, db):
     """
     time_dict = {}
     time_dict["Start"] = time.time()
-    chips_dict, save_dir, pred_dir, no_of_chips, no_of_batches = check_dir(
+    no_of_batches, no_of_chips, chips_dict, save_dir, pred_dir = check_dir(
         image, lot_no, db
     )
     time_dict["Directory Checking"] = time.time() - time_dict["Start"]
@@ -96,3 +96,4 @@ def inspect(image, lot_no, chip_type, db):
     time_print(time_dict)
 
     return chips_dict, save_dir, img_shape, no_of_batches, no_of_chips
+
